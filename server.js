@@ -5,7 +5,9 @@ var final = require('finalhandler');
 var emptygif = require('empty-gif');
 
 var parseurl = require('parseurl');
+var requesturl = require('request-url');
 var qs = require('qs');
+var url = require('url');
 
 var tsdb = require('timestreamdb');
 var level = require('level');
@@ -25,6 +27,37 @@ router.get('/:asset/1x1', function (req, res) {
     res.end(emptygif);
 
     db.put(req.params.asset, { referer: req.headers.referer });
+});
+
+router.get('/:asset/track/:key', function (req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/javascript' });
+    res.end('');
+
+    db.put(req.params.asset, { referer: req.headers.referer, key: req.params.key });
+});
+
+router.get('/:asset/tracker.js', function (req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/javascript' });
+    res.end(
+        `
+        (function setupMu(global) {
+            var pending = global.muanalytics;
+
+            global.muanalytics = {
+                push: function(key) {
+                    var scr = document.createElement('script');
+                    scr.src = ${JSON.stringify(url.resolve(requesturl(req), '.'))} + 'track/' + key;
+                    src.onload = function () {
+                        scr.parentElement.removeChild(scr);
+                    };
+                    document.documentElement.appendChild(scr);
+                }
+            };
+
+            if (pending) pending.forEach(global.muanalytics.push);
+        })(this);
+        `
+    );
 });
 
 router.get('/:asset/:period/:n', (req, res) => {
