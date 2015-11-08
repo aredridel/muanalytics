@@ -1,19 +1,19 @@
-var tsdb = require('timestreamdb');
-var level = require('level');
-
-var db = tsdb(level('data', {valueEncoding: "json"}));
-
 var http = require('http');
-
 var router = require('router')();
 var final = require('finalhandler');
 
 var emptygif = require('empty-gif');
+
 var parseurl = require('parseurl');
 var qs = require('qs');
 
+var tsdb = require('timestreamdb');
+var level = require('level');
+
 var ago = require('ago');
 var floordate = require('floordate');
+
+var db = tsdb(level(process.env.ANALYTICS_DATA || 'data', {valueEncoding: "json"}));
 
 router.get('/:asset/1x1', function (req, res) {
     res.writeHead(200, { 'Content-Type' : 'image/gif'} );
