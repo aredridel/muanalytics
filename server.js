@@ -9,19 +9,38 @@ var router = require('router')();
 var final = require('finalhandler');
 
 var emptygif = require('empty-gif');
+var parseurl = require('parseurl');
+var qs = require('qs');
 
-router.get('/', (req, res) => {
-    db.ts("req")
-    .count()
-    .toArray(function (a) {
-        res.end(JSON.stringify(a));
-    })
+var ago = require('ago');
+var floordate = require('floordate');
+
+router.get('/:asset/1x1', function (req, res) {
+    res.writeHead(200, { 'Content-Type' : 'image/gif'} );
+    res.end(emptygif);
+
+    db.put(req.params.asset, { referer: req.headers.referer });
 });
 
-router.get('/1x1', function (req, res) {
-    res.writeHead(200, { 'Content-Type' : 'image/gif'} );
-    db.put('req', { referer: req.headers.referer });
-    res.end(emptygif);
+router.get('/:asset/:period', (req, res) => {
+    var url = parseurl(req);
+    var q = qs.parse(url.query);
+    var period = req.params.period;
+
+    db.ts(req.params.asset, {from: floordate(ago(1, period), period), to: Date.now()})
+    .filter(function (e) {
+        for (var i in q) {
+            if (e[i] != q[i]) return false;
+        }
+
+        return true;
+    })
+    .count('hours')
+    .rename('referer', 'hits')
+    .keep('hits')
+    .toArray(function (a) {
+        res.end(JSON.stringify(a) + "\n");
+    })
 });
 
 http.createServer(function (req, res) {

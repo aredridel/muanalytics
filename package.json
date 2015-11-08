@@ -6,9 +6,12 @@
   "author": "Aria Stewart <aredridel@dinhe.net>",
   "license": "ISC",
   "dependencies": {
+    "ago": "^1.0.0",
     "empty-gif": "^1.0.0",
     "finalhandler": "^0.4.0",
+    "floordate": "^2.0.0",
     "level": "^1.3.0",
+    "parseurl": "^1.3.0",
     "router": "^1.1.3",
     "timestream": "^0.1.1",
     "timestreamdb": "^0.1.1"
