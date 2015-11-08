@@ -27,12 +27,12 @@ router.get('/:asset/1x1', function (req, res) {
     db.put(req.params.asset, { referer: req.headers.referer });
 });
 
-router.get('/:asset/:period', (req, res) => {
+router.get('/:asset/:period/:n', (req, res) => {
     var url = parseurl(req);
     var q = qs.parse(url.query);
     var period = req.params.period;
 
-    var start = floordate(ago(1, period), period).valueOf();
+    var start = floordate(ago(req.params.n, period), period).valueOf();
     var until = Date.now();
     db.ts(req.params.asset, {start, until})
     .filter(function (e) {
