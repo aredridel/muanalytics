@@ -60,7 +60,7 @@ router.get('/:asset/tracker.js', function (req, res) {
     );
 });
 
-router.get('/:asset/:period/:n', (req, res) => {
+router.get('/:asset/:period/:n/:color', (req, res) => {
     var url = parseurl(req);
     var q = qs.parse(url.query);
     var period = req.params.period;
@@ -81,16 +81,16 @@ router.get('/:asset/:period/:n', (req, res) => {
     .union(timestream.gen({start, until, interval: 3600000, key: 'hits', increment: 0}))
     .toArray(function (a) {
 
-        var max = a.reduce(function (acc, e) { return Math.max(acc, e.hits) }, 0);
+        var max = Math.max(a.reduce(function (acc, e) { return Math.max(acc, e.hits) }, 0), 25);
 
         res.writeHead(200, { "Content-Type": "image/svg+xml" });
         var svg = h('svg', { width: a.length * 3, height: 26 }, [
             h('defs', [
-                h('style', [ "rect { fill: red }" ])
+                h('style', [ `rect { fill: ${req.params.color == 'light' ? 'white' : 'black'} }` ])
             ])
         ].concat(a.map(function (e, i) {
-            var height = Math.floor(25 * (e.hits / max));
-            return h('rect', { x: i * 3, y: 25 - height, width: 3, height: height + 1 })
+            var height = Math.ceil(25 * (e.hits / max));
+            return h('rect', { x: i * 3, y: 25 - height, width: 2, height: height + 1 })
         })));
 
         res.end(vdstringify(svg));
