@@ -13,6 +13,8 @@ var level = require('level');
 var ago = require('ago');
 var floordate = require('floordate');
 
+var timestream = require('timestream');
+
 var db = tsdb(level(process.env.ANALYTICS_DATA || 'data', {valueEncoding: "json"}));
 
 router.get('/:asset/1x1', function (req, res) {
@@ -27,7 +29,9 @@ router.get('/:asset/:period', (req, res) => {
     var q = qs.parse(url.query);
     var period = req.params.period;
 
-    db.ts(req.params.asset, {from: floordate(ago(1, period), period), to: Date.now()})
+    var start = floordate(ago(1, period), period).valueOf();
+    var until = Date.now();
+    db.ts(req.params.asset, {start, until})
     .filter(function (e) {
         for (var i in q) {
             if (e[i] != q[i]) return false;
@@ -38,6 +42,7 @@ router.get('/:asset/:period', (req, res) => {
     .count('hours')
     .rename('referer', 'hits')
     .keep('hits')
+    .union(timestream.gen({start, until, interval: 3600000}))
     .toArray(function (a) {
         res.end(JSON.stringify(a) + "\n");
     })
