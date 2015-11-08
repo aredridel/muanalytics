@@ -17,6 +17,9 @@ var timestream = require('timestream');
 
 var db = tsdb(level(process.env.ANALYTICS_DATA || 'data', {valueEncoding: "json"}));
 
+var h = require('virtual-hyperscript-svg');
+var vdstringify = require('virtual-dom-stringify');
+
 router.get('/:asset/1x1', function (req, res) {
     res.writeHead(200, { 'Content-Type' : 'image/gif'} );
     res.end(emptygif);
@@ -42,9 +45,22 @@ router.get('/:asset/:period', (req, res) => {
     .count('hours')
     .rename('referer', 'hits')
     .keep('hits')
-    .union(timestream.gen({start, until, interval: 3600000}))
+    .union(timestream.gen({start, until, interval: 3600000, key: 'hits', increment: 0}))
     .toArray(function (a) {
-        res.end(JSON.stringify(a) + "\n");
+
+        var max = a.reduce(function (acc, e) { return Math.max(acc, e.hits) }, 0);
+
+        res.writeHead(200, { "Content-Type": "image/svg+xml" });
+        var svg = h('svg', { width: a.length * 3, height: 26 }, [
+            h('defs', [
+                h('style', [ "rect { fill: red }" ])
+            ])
+        ].concat(a.map(function (e, i) {
+            var height = Math.floor(25 * (e.hits / max));
+            return h('rect', { x: i * 3, y: 25 - height, width: 3, height: height + 1 })
+        })));
+
+        res.end(vdstringify(svg));
     })
 });
 
