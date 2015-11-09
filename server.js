@@ -26,14 +26,14 @@ router.get('/:asset/1x1', function (req, res) {
     res.writeHead(200, { 'Content-Type' : 'image/gif'} );
     res.end(emptygif);
 
-    db.put(req.params.asset, { referer: req.headers.referer });
+    db.put(req.params.asset, { hits: 1, referer: req.headers.referer });
 });
 
 router.get('/:asset/track/:key', function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/javascript' });
     res.end('');
 
-    db.put(req.params.asset, { referer: req.headers.referer, key: req.params.key });
+    db.put(req.params.asset, { hits: 1, referer: req.headers.referer, key: req.params.key, headers: req.headers });
 });
 
 router.get('/:asset/tracker.js', function (req, res) {
