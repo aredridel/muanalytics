@@ -22,18 +22,24 @@ var db = tsdb(level(process.env.ANALYTICS_DATA || 'data', {valueEncoding: "json"
 var h = require('virtual-hyperscript-svg');
 var vdstringify = require('virtual-dom-stringify');
 
+var xtend = require('xtend');
+
 router.get('/:asset/1x1', function (req, res) {
     res.writeHead(200, { 'Content-Type' : 'image/gif'} );
     res.end(emptygif);
 
-    db.put(req.params.asset, { hits: 1, referer: req.headers.referer });
+    var url = parseurl(req);
+    var q = qs.parse(url.query);
+    db.put(req.params.asset, { hits: 1, headers: req.headers });
 });
 
 router.get('/:asset/track/:key', function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/javascript' });
     res.end('');
 
-    db.put(req.params.asset, { hits: 1, referer: req.headers.referer, key: req.params.key, headers: req.headers });
+    var url = parseurl(req);
+    var q = qs.parse(url.query);
+    db.put(req.params.asset, xtend(q, { hits: 1, key: req.params.key, headers: req.headers }));
 });
 
 router.get('/:asset/tracker.js', function (req, res) {

@@ -17,6 +17,7 @@
     "timestream": "^0.1.1",
     "timestreamdb": "^0.1.1",
     "virtual-dom-stringify": "^3.0.1",
-    "virtual-hyperscript-svg": "^2.0.0"
+    "virtual-hyperscript-svg": "^2.0.0",
+    "xtend": "^4.0.1"
   }
 }
