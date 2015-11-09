@@ -79,7 +79,7 @@ router.get('/:asset/:period/:n/:color', (req, res) => {
     .union(timestream.gen({start, until, interval: 3600000, key: 'hits', increment: 0}))
     .toArray(function (a) {
 
-        var max = Math.max(a.reduce(function (acc, e) { return Math.max(acc, e.hits) }, 0), 25);
+        var max = Math.max(a.reduce(function (acc, e) { return Math.max(acc, e.hits || 0) }, 0), 25);
 
         res.writeHead(200, { "Content-Type": "image/svg+xml" });
         var svg = h('svg', { width: a.length * 3, height: 26 }, [
