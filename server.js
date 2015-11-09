@@ -52,7 +52,7 @@ router.get('/:asset/tracker.js', function (req, res) {
             global.muanalytics = {
                 push: function(key) {
                     var scr = document.createElement('script');
-                    scr.src = ${JSON.stringify(url.resolve(requesturl(req), '.'))} + 'track/' + key;
+                    scr.src = ${JSON.stringify(url.resolve(requesturl(req), '.'))} + 'track/' + encodeURIComponent(key);
                     scr.onload = function () {
                         scr.parentElement.removeChild(scr);
                     };
