@@ -1,7 +1,7 @@
 {
   "name": "muanalytics",
   "version": "1.0.0",
-  "description": "",
+  "description": "A tiny web analytics platform",
   "main": "index.js",
   "author": "Aria Stewart <aredridel@dinhe.net>",
   "license": "ISC",
@@ -22,5 +22,19 @@
   },
   "engines": {
     "node": ">=5.0.0"
-  }
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aredridel/muanalytics.git"
+  },
+  "keywords": [
+    "analytics"
+  ],
+  "bugs": {
+    "url": "https://github.com/aredridel/muanalytics/issues"
+  },
+  "homepage": "https://github.com/aredridel/muanalytics#readme"
 }
