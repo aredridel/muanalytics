@@ -47,7 +47,7 @@ router.get('/:asset/tracker.js', function (req, res) {
                 push: function(key) {
                     var scr = document.createElement('script');
                     scr.src = ${JSON.stringify(url.resolve(requesturl(req), '.'))} + 'track/' + key;
-                    src.onload = function () {
+                    scr.onload = function () {
                         scr.parentElement.removeChild(scr);
                     };
                     document.documentElement.appendChild(scr);
