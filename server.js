@@ -76,8 +76,6 @@ router.get('/:asset/:period/:n/:color', (req, res) => {
         return true;
     })
     .count('hours')
-    .rename('referer', 'hits')
-    .keep('hits')
     .union(timestream.gen({start, until, interval: 3600000, key: 'hits', increment: 0}))
     .toArray(function (a) {
 
