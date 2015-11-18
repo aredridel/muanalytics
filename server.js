@@ -24,6 +24,8 @@ var vdstringify = require('virtual-dom-stringify');
 
 var xtend = require('xtend');
 
+var uts = require('./uniq-timestream');
+
 var cookie = require('cookie');
 var sri = require('simple-random-id');
 
@@ -97,6 +99,7 @@ router.get('/:asset/:period/:n/:color', (req, res) => {
 
         return true;
     })
+    .pipe(uts('_t', 'hour', 'sid'))
     .count('hours')
     .union(timestream.gen({start, until, interval: 3600000, key: 'hits', increment: 0}))
     .toArray(function (a) {

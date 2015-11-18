@@ -16,6 +16,7 @@
     "request-url": "^1.1.0",
     "router": "^1.1.3",
     "simple-random-id": "^1.0.1",
+    "through2": "^2.0.0",
     "timestream": "^0.1.1",
     "timestreamdb": "^0.1.1",
     "virtual-dom-stringify": "^3.0.1",
