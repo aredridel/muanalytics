@@ -24,25 +24,41 @@ var vdstringify = require('virtual-dom-stringify');
 
 var xtend = require('xtend');
 
-router.get('/:asset/1x1', function (req, res) {
+var cookie = require('cookie');
+var sri = require('simple-random-id');
+
+function setSession(req, res, next) {
+    var cookies = cookie.parse(req.headers.cookie || '');
+    if (!cookies._mu) {
+        cookies._mu = sri(24);
+    }
+
+    res.setHeader('Set-Cookie', cookie.serialize('_mu', cookies._mu, { expires: new Date(Date.now() + 1800000), path: '/' + req.params.asset }));
+
+    req.sid = cookies._mu;
+
+    next();
+}
+
+router.get('/:asset/1x1', setSession, function (req, res) {
     res.writeHead(200, { 'Content-Type' : 'image/gif'} );
     res.end(emptygif);
 
     var url = parseurl(req);
     var q = qs.parse(url.query);
-    db.put(req.params.asset, { hits: 1, headers: req.headers });
+    db.put(req.params.asset, { hits: 1, headers: req.headers, sid: req.sid });
 });
 
-router.get('/:asset/track/:key', function (req, res) {
+router.get('/:asset/track/:key', setSession, function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/javascript' });
     res.end('');
 
     var url = parseurl(req);
     var q = qs.parse(url.query);
-    db.put(req.params.asset, xtend(q, { hits: 1, key: req.params.key, headers: req.headers }));
+    db.put(req.params.asset, xtend(q, { hits: 1, key: req.params.key, headers: req.headers, sid: req.sid }));
 });
 
-router.get('/:asset/tracker.js', function (req, res) {
+router.get('/:asset/tracker.js', setSession, function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/javascript' });
     res.end(
         `
